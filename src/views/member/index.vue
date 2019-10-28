@@ -150,7 +150,7 @@ export default {
       total: 0,       // 总记录数
       currentPage: 1, // 当前页
       pageSize: 10,   // 每页10条数据
-      searchMap: {    // 条件查询中的查询条件（点击查询后会将查询条件的数据存入此对象中，之后再向后台查询会员信息，这个对象里可以不定义属性名{}，也可以写，但Element框架在未指定属性名的情况有时会出现bug：当点击重置后，再次去填写数据会发现不能输入进去，光标不能入焦）
+      searchMap: {    // 条件查询中的查询条件（点击查询后会将查询条件的数据存入此对象中，之后再向后台查询会员信息，这个对象里可以不定义属性名{}，也可以写，但Element框架在未指定属性名的情况有时会出现bug：当点击重置后，再次去填写数据会发现不能输入数据）
         cardNum: "",
         name: "",
         payType: "",
@@ -198,16 +198,16 @@ export default {
           }
         });
     },
-    // 当每页显示条数改变后触发
-    handleSizeChange(val) {
-      console.log(`每页 ${val} 条`);
-      this.pageSize = val;
-      this.fetchData();
-    },
     // 当页码改变后触发
     handleCurrentChange(val) {
       console.log(`当前页: ${val}`);
       this.currentPage = val;
+      this.fetchData();
+    },
+    // 当每页显示条数改变后触发
+    handleSizeChange(val) {
+      console.log(`每页 ${val} 条`);
+      this.pageSize = val;
       this.fetchData();
     },
     // Element的方法：重置需要看 el-form-item 元素上是否指定了prop属性，未指定是不能重置的
@@ -288,6 +288,10 @@ export default {
           this.pojo = resp.data;
         } else {
           // 查询失败
+          this.$message({
+            type: 'error',
+            message: resp.message
+          });
         }
       })
     },
