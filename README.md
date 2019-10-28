@@ -1,5 +1,3 @@
-# mxg-msm
-
 ## Project setup
 ```
 npm install

@@ -22,5 +22,47 @@ export default {
             method: 'post',
             data: searchMap
         })
+    },
+    /**
+     * 新增会员
+     * @param {会员对象} pojo
+     */
+    add(pojo) {
+        return request({
+            url: '/member',
+            method: 'post',
+            data: pojo
+        })
+    },
+    /**
+     * 查询会员信息
+     * @param {会员id} id
+     */
+    getById(id) {
+        return request({
+            url: `/member/${id}`,
+            method: 'get'
+        })
+    },
+    /**
+     * 更新会员信息
+     * @param {会员对象} pojo
+     */
+    update(pojo) {
+        return request({
+            url: `/member/${pojo.id}`,
+            method: 'put',
+            data: pojo
+        })
+    },
+    /**
+     * 删除会员信息
+     * @param {会员id} id 
+     */
+    deleteById(id) {
+        return request({
+            url: `/member/${id}`,
+            method: 'delete'
+        })
     }
 }

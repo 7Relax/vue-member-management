@@ -30,26 +30,67 @@
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="fetchData">查询</el-button>
-        <el-button type="primary" @click="dialogFormVisible=true">新增</el-button>
+        <el-button type="primary" @click="handleAdd">新增</el-button>
         <el-button @click="resetForm('searchForm')">重置</el-button>
       </el-form-item>
     </el-form>
     <!-- 弹出新增会员（默认隐藏） -->
-    <el-dialog title="会员编辑" :visible.sync="dialogFormVisible">
-      <el-form :model="memberObj">
-        <el-form-item label="活动名称">
-          <el-input v-model="memberObj.name" autocomplete="off"></el-input>
+    <el-dialog :title=popupTitle :visible.sync="dialogFormVisible" width="500px">
+      <el-form
+      :rules="rules"
+      ref="pojoForm"
+      label-width="100px"
+      label-position="right"
+      :model="pojo"
+      style="width:400px;">
+        <el-form-item label="会员卡号" prop="cardNum">
+          <el-input v-model="pojo.cardNum" autocomplete="off" width="50"></el-input>
         </el-form-item>
-        <el-form-item label="活动区域">
-          <el-select v-model="memberObj.region" placeholder="请选择活动区域">
-            <el-option label="区域一" value="shanghai"></el-option>
-            <el-option label="区域二" value="beijing"></el-option>
-          </el-select>
+        <el-form-item label="会员姓名" prop="name">
+          <el-input v-model="pojo.name" autocomplete="off"></el-input>
+        </el-form-item>
+
+        <el-form-item label="会员生日" prop="birthday">
+          <el-date-picker
+              value-format="yyyy-MM-dd"
+              v-model="pojo.birthday"
+              type="date"
+              placeholder="会员生日">
+          </el-date-picker>
+        </el-form-item>
+
+        <el-form-item label="手机号码" prop="phone">
+          <el-input v-model="pojo.phone" autocomplete="off"></el-input>
+        </el-form-item>
+
+        <el-form-item label="开卡金额" prop="money">
+          <el-input v-model="pojo.money" autocomplete="off"></el-input>
+        </el-form-item>
+
+        <el-form-item label="可用积分" prop="integral">
+          <el-input v-model="pojo.integral" autocomplete="on"></el-input>
+        </el-form-item>
+
+        <el-form-item label="支付类型" prop="payType">
+          <el-select v-model="pojo.payType" placeholder="支付类型" style="width: 110px;">
+              <!-- 不要忘记将 payTypeOptions 绑定到data中，否则只是一个普通的变量 -->
+              <el-option
+                v-for="option in payTypeOptions"
+                :key="option.type"
+                :label="option.name"
+                :value="option.type">
+              </el-option>
+            </el-select>
+        </el-form-item>
+
+        <el-form-item label="会员地址" prop="address">
+          <el-input type="textarea" v-model="pojo.address" autocomplete="off"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible=false">取 消</el-button>
-        <el-button type="primary" @click="dialogFormVisible=false">确 定</el-button>
+        <!-- <el-button type="primary" @click="addData('pojoForm')">确 定</el-button> -->
+        <el-button type="primary" @click="pojo.id === null ? addData('pojoForm') : updateData('pojoForm')">确 定</el-button>
       </div>
     </el-dialog>
     <!-- 表格 -->
@@ -117,9 +158,29 @@ export default {
       },
       payTypeOptions, // 等价于 payTypeOptions: payTypeOptions
       dialogFormVisible: false, // 显示/隐藏对话框（初始值是false：不显示）
-      memberObj: {
-
+      pojo: {
+        id: null,
+        cardNum: "",
+        name: "",
+        birthday: "",
+        phone: "",
+        money: "",
+        integral: "",
+        payType: "",
+        address: ""
       },
+      popupTitle: "新增会员",
+      rules: { // 校验规则
+         cardNum: [
+           {required: true, message: '卡号不能为空', trigger: 'blur'}
+         ],
+         name: [
+           {required: true, message: '姓名不能为空', trigger: 'blur'}
+         ],
+         payType: [
+           {required: true, message: '支付类型不能为空', trigger: 'change'} // 因为是select元素所以用change
+         ]
+      }
     };
   },
   methods: {
@@ -154,12 +215,108 @@ export default {
       console.log("formName: " + formName);
       this.$refs[formName].resetFields();
     },
+    addData(formName) {
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          // 前端验证通过，提交表单
+          memberApi.add(this.pojo).then(response => {
+            const resp = response.data;
+            console.log(resp);
+            if (resp.flag) {
+              // 新增成功，刷新列表数据
+              this.fetchData();
+              // 隐藏新增对话框
+              this.dialogFormVisible = false;
+            } else {
+              this.$message({
+                message: resp.message,
+                type: 'warning'
+              })
+            }
+          })
+        } else {
+          return false;
+        }
+      })
+    },
+    updateData(formName) {
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          memberApi.update(this.pojo).then(response => {
+            const resp = response.data;
+            if (resp.flag) {
+              // 刷新列表
+              this.fetchData();
+              this.dialogFormVisible = false;
+            } else {
+              this.$message({
+                message: resp.message,
+                type: 'warning'
+              })
+            }
+          })
+        }
+      })
+    },
+    handleAdd(flag) {
+      if (flag == 'edit') {
+        this.popupTitle = "编辑会员";
+      } else {
+        this.popupTitle = "新增会员";
+      }
+
+      this.dialogFormVisible = true;
+
+      // resetFields方法: 对整个表单进行重置，将所有字段值重置为初始值并移除校验结果
+
+      // 报错：Cannot read property 'resetFields' of undefined"
+      // this.$refs['pojoForm'].resetFields();
+
+      // 在vue提供的内置方法nextTick中就不会报错，实际是一个异步事件，因为 this.dialogFormVisible = true; 设置为true之后，弹出框就会弹出（需要花时间加载dom）,这个时候就去对表单进行重置操作，那报错的概率会很高（因为dom还没有渲染出来，表单还没有呢）
+      // 应该等待加载完dom后再执行后续的操作
+      // 注意：resetFields要结合prop使用，并且使用了prop就会出现输出框输入不了的问题（需要在pojo对象定义具体的属性才可以解决， 或者 this.pojo = {};）
+      this.$nextTick(() => {
+        this.$refs['pojoForm'].resetFields();
+      })
+    },
     handleEdit(id) {
       console.log("编辑", id);
+      this.handleAdd('edit'); // 复用
+      memberApi.getById(id).then(response => {
+        const resp = response.data;
+        if (resp.flag) {
+          this.pojo = resp.data;
+        } else {
+          // 查询失败
+        }
+      })
     },
     handleDelete(id) {
       console.log("删除", id);
-    }
+      // 弹出删除框
+      this.$confirm('删除该会员, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          memberApi.deleteById(id).then(response => {
+            const resp = response.data;
+            this.$message({
+              type: resp.flag ? 'success' : 'error',
+              message: resp.message
+            });
+            // 刷新
+            if (resp.flag) {
+              this.fetchData();
+            }
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });          
+        });
+    },
   },
   filters: {
     payTypeFilter(type) {
