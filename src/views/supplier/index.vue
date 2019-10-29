@@ -6,20 +6,20 @@
       <el-form-item prop="name">
         <el-input v-model="searchMap.name" placeholder="供应商名称" style="width: 230px;"></el-input>
       </el-form-item>
-      <el-form-item prop="linkman">
+      <el-form-item prop="linkman" v-if="!isDialog">
         <el-input v-model="searchMap.linkman" placeholder="联系人" style="width: 230px;"></el-input>
       </el-form-item>
-      <el-form-item prop="mobile">
+      <el-form-item prop="mobile" v-if="!isDialog">
         <el-input v-model="searchMap.mobile" placeholder="联系电话" style="width: 230px;"></el-input>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="fetchData">查询</el-button>
-        <el-button type="primary" @click="handleAdd">新增</el-button>
-        <el-button @click="resetForm('searchForm')">重置</el-button>
+        <el-button type="primary" @click="handleAdd" v-if="!isDialog">新增</el-button>
+        <el-button @click="resetForm('searchForm')" v-if="!isDialog">重置</el-button>
       </el-form-item>
     </el-form>
-    <!-- 弹出新增会员（默认隐藏） -->
-    <el-dialog :title="popupTitle" :visible.sync="dialogFormVisible" width="500px">
+    <!-- 弹出新增会员（默认隐藏），为了节省性能开销，如果是从商品管理点击的供应商那就是弹出框，那就不让其渲染isDialog -->
+    <el-dialog :title="popupTitle" :visible.sync="dialogFormVisible" width="500px" v-if="!isDialog">
       <el-form
         :rules="rules"
         ref="pojoForm"
@@ -52,15 +52,22 @@
         >确 定</el-button>
       </div>
     </el-dialog>
-    <!-- 表格 -->
-    <el-table :data="list" height="580" border style="width: 100%">
+    <!-- 表格 
+      highlight-current-row 激活单选行
+      @current-change 当点击某一行后，会触发这个事件，从而调用对应的函数handleCurrentChange，
+      handleCurrentChange 这个函数会接受两个参数 currentRow、oldCurrentRow
+      -->
+    <el-table height="550" border style="width: 100%"
+      :data="list" 
+      :highlight-current-row="isDialog" 
+      @current-change="handleCurrentChange2">
       <!-- type="index"获取索引值，从1开始  -->
       <el-table-column type="index" label="序号" width="80"></el-table-column>
       <el-table-column prop="name" label="供应商名称" width="280"></el-table-column>
       <el-table-column prop="linkman" label="联系人" width="160"></el-table-column>
-      <el-table-column prop="mobile" label="联系电话" width="160"></el-table-column>
-      <el-table-column prop="remark" label="备注" width="280"></el-table-column>
-      <el-table-column label="操作" width="200">
+      <el-table-column prop="mobile" label="联系电话" width="160" v-if="!isDialog"></el-table-column>
+      <el-table-column prop="remark" label="备注" width="280" v-if="!isDialog"></el-table-column>
+      <el-table-column label="操作" width="200" v-if="!isDialog">
         <template slot-scope="scope">
           <el-button size="mini" @click="handleEdit(scope.row.id)">编辑</el-button>
           <el-button size="mini" type="danger" @click="handleDelete(scope.row.id)">删除</el-button>
@@ -72,10 +79,11 @@
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
       :current-page="currentPage"
-      :page-sizes="[10, 20, 50, 100]"
+      :page-sizes="[10, 20, 50]"
       :page-size="pageSize"
-      layout="total, sizes, prev, pager, next, jumper"
+      :layout="!isDialog ? 'total, sizes, prev, pager, next, jumper' : 'prev, pager, next'"
       :total="total"
+      style="margin-top:10px"
     ></el-pagination>
   </div>
 </template>
@@ -83,6 +91,9 @@
 <script>
 import supplierApi from "@/api/supplier";
 export default {
+  props: {
+    isDialog: Boolean, // 子组件接受父组件传递过来的数据，通过isDialog来判断是否为弹框，true则为弹框
+  },
   created() {
     this.fetchData();
   },
@@ -257,6 +268,11 @@ export default {
                 message: '已取消删除'
             });          
         });
+    },
+    // 当点击某一行时，会调用这个函数
+    handleCurrentChange2(currentRow) {
+        // 触发父组件里面的事件，第一个参数是事件名，第二个参数是传递的数据
+        this.$emit('option-supplier', currentRow);
     }
   }
 };

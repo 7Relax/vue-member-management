@@ -94,7 +94,7 @@
       </div>
     </el-dialog>
     <!-- 表格 -->
-    <el-table :data="list" height="580" border style="width: 100%">
+    <el-table :data="list" :height="tableHeight" border style="width: 100%">
       <!-- type="index"获取索引值，从1开始  -->
       <el-table-column type="index" label="序号" width="50"></el-table-column>
       <el-table-column prop="cardNum" label="卡号" width="160"></el-table-column>
@@ -125,6 +125,7 @@
       :page-size="pageSize"
       layout="total, sizes, prev, pager, next, jumper"
       :total="total"
+      style="margin-top:10px"
     ></el-pagination>
   </div>
 </template>
@@ -144,6 +145,26 @@ export default {
     // 初始化获取列表数据
     this.fetchData();
   },
+  // 数据挂载之前，获取到了模板，但是数据还未挂载到模板上
+  beforeMount() {
+    // 获取浏览器可视区域高度
+    this.clientHeight = document.documentElement.clientHeight || document.body.clientHeight;
+    // 监听高度
+    const that = this;
+    window.onresize = function temp() {
+      that.clientHeight = document.documentElement.clientHeight;
+      console.log('window.onresize >> clientHeight : ', that.clientHeight);
+    };
+  },
+  watch: {
+    // 如果 clientHeight 发生改变，这个函数就会运行
+    clientHeight: function () {
+      // 动态 tableHeight 高度
+      this.tableHeight = this.clientHeight - 150;
+      console.log("页面高度："+this.clientHeight);
+      console.log("table高度："+this.tableHeight);
+    }
+  },
   data() {
     return {
       list: [],
@@ -156,7 +177,9 @@ export default {
         payType: "",
         birthday: ""
       },
-      payTypeOptions, // 等价于 payTypeOptions: payTypeOptions
+      tableHeight: 550 ,
+      clientHeight: 650, // 当前客户端可视区域高度
+      payTypeOptions,    // 等价于 payTypeOptions: payTypeOptions
       dialogFormVisible: false, // 显示/隐藏对话框（初始值是false：不显示）
       pojo: {
         id: null,
@@ -184,6 +207,10 @@ export default {
     };
   },
   methods: {
+    getHeight() {
+      console.log("window.height: ", );
+      return 333
+    },
     fetchData() {
       //   memberApi.getList().then(response => {
       memberApi
