@@ -23,7 +23,7 @@
             </el-form-item>
         </el-form>
         <!-- 表格 -->
-        <el-table :data="list" height="580" border style="width: 100%">
+        <el-table :data="list" height="565" border style="width: 100%">
             <!-- type="index"获取索引值，从1开始  -->
             <el-table-column type="index" label="序号" width="80"></el-table-column>
             <el-table-column prop="name" label="商品名称" width="180"></el-table-column>
@@ -48,7 +48,8 @@
             :page-sizes="[10, 20, 50, 100]"
             :page-size="pageSize"
             layout="total, sizes, prev, pager, next, jumper"
-            :total="total">
+            :total="total"
+            style="margin-top:18px">
         </el-pagination>
         <!-- 供应商对话框，异步打开的，所以有sync -->
         <!-- <el-dialog title="选择供应商" :visible.sync="dialogSupplierVisible" fullscreen="true" width="500px"> -->

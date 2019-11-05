@@ -1,6 +1,7 @@
 import request from "@/utils/request.js";
 
 export function login(username, password) {
+    // 实际上这里返回的对象也是Promise（是axios帮我们实现的）
     return request({
         method: 'post',
         url: '/user/login',

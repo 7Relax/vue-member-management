@@ -57,7 +57,7 @@
       @current-change 当点击某一行后，会触发这个事件，从而调用对应的函数handleCurrentChange，
       handleCurrentChange 这个函数会接受两个参数 currentRow、oldCurrentRow
       -->
-    <el-table height="550" border style="width: 100%"
+    <el-table height="565" border style="width: 100%"
       :data="list" 
       :highlight-current-row="isDialog" 
       @current-change="handleCurrentChange2">
@@ -83,7 +83,7 @@
       :page-size="pageSize"
       :layout="!isDialog ? 'total, sizes, prev, pager, next, jumper' : 'prev, pager, next'"
       :total="total"
-      style="margin-top:10px"
+      style="margin-top:18px"
     ></el-pagination>
   </div>
 </template>

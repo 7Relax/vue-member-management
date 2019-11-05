@@ -94,7 +94,7 @@
       </div>
     </el-dialog>
     <!-- 表格 -->
-    <el-table :data="list" :height="tableHeight" border style="width: 100%">
+    <el-table :data="list" height="565" border style="width: 100%">
       <!-- type="index"获取索引值，从1开始  -->
       <el-table-column type="index" label="序号" width="50"></el-table-column>
       <el-table-column prop="cardNum" label="卡号" width="160"></el-table-column>
@@ -125,7 +125,7 @@
       :page-size="pageSize"
       layout="total, sizes, prev, pager, next, jumper"
       :total="total"
-      style="margin-top:10px"
+      style="margin-top:18px"
     ></el-pagination>
   </div>
 </template>

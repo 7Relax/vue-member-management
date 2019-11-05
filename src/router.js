@@ -21,7 +21,7 @@ const routes = [
   {
     path: '/',
     name: 'layout',
-    component: Layout, // Layout里面指定了子路由的渲染出口
+    component: Layout, // Layout里面指定了子路由的渲染出口 -> AppMain中的 <router-view></router-view>
     redirect: '/home', // 重定向到它的子路由（效果：登录成功就直接选中首页，登录成功后首先进入 / 如：this.$router.push('/') 进入/后立刻又会重定向到/home）
     children: [
       {

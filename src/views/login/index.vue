@@ -48,7 +48,22 @@ export default {
                 if (valid) {
                     // 提交给后台验证（验证用户名和密码）
                     console.log("submit!");
-                    login(this.form.username, this.form.password).then(response => {
+                    // 改成在这里触发actions 并提交载荷，这里的载荷是表单（通过Vuex来管理数据）
+                    this.$store.dispatch('Login', this.form).then(response => {
+                        console.log("login : ", response);
+                        if (response.flag) {
+                            // 登录成功，前往首页（因为在permission权限校验里已经实现了当未获取到用户信息时会通过token去获取，所以这里可以省略获取用户信息的操作）
+                            this.$router.push("/");
+                        } else {
+                            this.$message({
+                                type: 'warning',
+                                message: response.message
+                            })
+                        }
+                    }).catch(error => {
+                        // 不做处理（因为在响应拦截器里已经做了全局异常处理了：request.interceptors.response）
+                    })
+                    /* login(this.form.username, this.form.password).then(response => {
                         const resp = response.data;
                         console.log(resp);
                         if (resp.flag) {
@@ -78,7 +93,7 @@ export default {
                               type: "warning"
                             });
                         }
-                    });
+                    }); */
                 } else {
                     console.log("error submit!!");
                     return false;
