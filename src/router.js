@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import VueRouter from 'vue-router'
+import Router from 'vue-router'
 // import Login from './views/login/index.vue'
 // 默认会导入 ./views/login/index.vue 所以可以不写index.vue
 import Login from './views/login'
@@ -10,7 +10,7 @@ import Supplier from '@/views/supplier'
 import Goods from '@/views/goods'
 import Staff from '@/views/staff'
 
-Vue.use(VueRouter)
+Vue.use(Router)
 
 const routes = [
   {
@@ -81,9 +81,9 @@ const routes = [
   }
 ]
 
-const router = new VueRouter({
+const router = new Router({
   // mode: 'history', // 历史路由就没有哈希如：http://localhost:8080/about， 取消历史路由则：http://localhost:8080/#/about
-  base: process.env.BASE_URL,
+  // base: process.env.BASE_URL,
   routes
 })
 

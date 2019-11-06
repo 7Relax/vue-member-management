@@ -1,12 +1,12 @@
 <template>
     <div class="login-container">
-        <el-form ref="form" :rules="rules" :model="form" label-width="80px" class="login-form">
+        <el-form ref="form" :rules="rules" :model="form" label-width="60px" class="login-form">
             <h2 class="login-title">会员管理系统</h2>
             <el-form-item label="账号" prop="username">
-                <el-input v-model="form.username"></el-input>
+                <el-input v-model="form.username" type="text" style="width: 275px" clearable></el-input>
             </el-form-item>
             <el-form-item label="密码" prop="password">
-                <el-input v-model="form.password" type="password"></el-input>
+                <el-input v-model="form.password" type="password" show-password style="width: 275px"></el-input>
             </el-form-item>
             <el-form-item>
                 <el-button type="primary" @click="submitForm('form')">登录</el-button>
